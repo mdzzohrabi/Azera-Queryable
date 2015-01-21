@@ -1,0 +1,26 @@
+{
+    "name": "mdzzohrabi/azera-queryable",
+    "description": "Azera Queryable Component",
+    "type": "library",
+    "keywords": [
+        "queryable",
+        "enumerable",
+        "azera",
+        "component"
+    ],
+    "authors": [
+        {
+            "name": "Masoud Zohrabi",
+            "email": "mdzzohrabi@gmail.com"
+        }
+    ],
+    "license": "proprietary",
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Azera\\Component\\Queryable\\": ""
+        }
+    }
+}
