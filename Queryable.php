@@ -161,7 +161,7 @@ class Queryable implements Iterator, ArrayAccess
 	 */
 	public function Contains( $value )
 	{
-		return in_array( $this->repository , $value );
+		return in_array( $value , $this->repository );
 	}
 
 	/**
@@ -172,7 +172,7 @@ class Queryable implements Iterator, ArrayAccess
 	public function Concat( $source )
 	{
 
-		$source = is_array($source) ?: ( $source instanceof Queryable ? $source->toList() : iterator_to_array($source) );
+		$source = is_array($source) ? $source : ( $source instanceof Queryable ? $source->toList() : iterator_to_array($source) );
 
 		return $this
 					->getClone()
@@ -182,9 +182,9 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Returns distinct elements from a sequence by using the default equality comparer to compare values
-	 * @param string|Closure $Func Comparer
+	 * @return Queryable
 	 */
-	public function Distinct( $Func = null )
+	public function Distinct()
 	{
 
 		return $this

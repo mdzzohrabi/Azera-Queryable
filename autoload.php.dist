@@ -1,0 +1,13 @@
+<?php
+spl_autoload_register(function( $class ){
+
+	$class = preg_replace('/^Azera\\\\Component\\\\Queryable\\\\/', '', $class);
+
+	$file = __DIR__ . '/' . str_replace('\\','/',$class) . '.php';
+
+	if ( file_exists($file) ) return require_once $file;
+
+	return false;
+
+});
+?>
