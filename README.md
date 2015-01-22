@@ -1,4 +1,4 @@
-# Azera Queryable
+# Azera Queryable ![Travis](https://travis-ci.org/mdzzohrabi/Azera-Queryable.svg?branch=master)
 ---
 **Samples :**
 ```php
