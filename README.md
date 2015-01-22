@@ -80,6 +80,9 @@ $users = array(
 
 // deleteElementAt
 (new Queryable)->insertBulk( [ 80 , 90 , 100 ] )->deleteElementAt(1); // Return Queryable( [ 80 , 100 ] )
+
+// Sort
+(new Queryable)->insertBulk( range(1,100) )->Sort('a,b => a < b')->First(); // Return 100
 ```
 
 # Class Abstract
