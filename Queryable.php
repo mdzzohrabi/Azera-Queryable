@@ -397,22 +397,52 @@ class Queryable implements Iterator, ArrayAccess
 		unset( $this->repository[$offset] );
 	}
 
+	/**
+	 * Insert item to sequence
+	 * @param mixed $value Value
+	 */
 	public function insert( $value )
 	{
 		$this->repository[] = $value;
 		return $this;
 	}
 
+	/**
+	 * Insert many items to sequence
+	 * @param array $values Values
+	 */
 	public function insertMany( $values )
 	{
 		$this->repository = array_merge( $this->repository , $values );
 		return $this;
 	}
 
+	/**
+	 * Delete key from sequence
+	 * @param mixed $offset Key name
+	 */
 	public function deleteElementAt( $offset )
 	{
 		unset( $this->repository[ $offset ] );
 		return $this;
+	}
+
+	/**
+	 * Sort sequence by given comparator
+	 * @param Expression $Func Comparator
+	 * @return Queryable
+	 */
+	public function Sort( $Func = null )
+	{
+		$sorted = $this->repository;
+
+		$Func = new Expression( $Func );
+
+		usort( $sorted , [ $Func , 'execute' ] );
+
+		return $this
+					->getClone()
+					->setRepository( $sorted );
 	}
 
 
