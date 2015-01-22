@@ -6,7 +6,7 @@ use Closure;
 class Expression
 {
 
-	const VALID_VAR_REGEX = '[a-zA-Z_][a-zA-Z0-9_]*';
+	const VALID_VAR_REGEX = '(?:[a-zA-Z_][a-zA-Z0-9_]*,?)+';
 
 	/**
 	 * Compiled expression to php excutable
@@ -19,7 +19,9 @@ class Expression
 	 * @var string
 	 */
 	private $expression;
-	
+
+	private $multiInput = false;
+
 	public function __construct( $expression )
 	{
 
@@ -44,9 +46,21 @@ class Expression
 
 		$x = $out['varname']; $code = $out['code'];
 
-		$result = "$$x = &\$input;\n";
+		$vars = explode( ',' , $x );
 
-		$code = preg_replace('/\b('.$x.')\b/','$\1', $code );
+		$result = "";
+
+		if ( count($vars) > 1 )
+		{
+			$this->multiInput = true;
+			foreach ( $vars as $i => $var )
+				$result .= "$$var = &\$input[$i];\n";
+		} else {
+			$var = current($vars);
+			$result .= "$$var = &\$input;\n";
+		}
+
+		$code = preg_replace('/\b('.implode('|',$vars).')\b/','$\1', $code );
 
 		$result .= "return $code;";
 
@@ -56,7 +70,8 @@ class Expression
 
 	public function execute( $input )
 	{
-		return $this->compiled instanceof Closure ? call_user_func_array($this->compiled,[ $input ]) : eval( $this->compiled );
+		if ( $this->multiInput ) $input = func_get_args();
+		return $this->compiled instanceof Closure ? call_user_func_array($this->compiled, [ $input ] ) : eval( $this->compiled );
 	}
 
 	public function toPHP()
