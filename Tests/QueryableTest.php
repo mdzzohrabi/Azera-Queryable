@@ -66,7 +66,7 @@ class QueryableTest extends \PHPUnit_Framework_TestCase
 
 	/**
 	 * @dataProvider Repository
-	 * @covers ::Where()
+	 * @covers Where()
 	 * @depends testFirst
 	 */
 	function testWhere( array $data )
@@ -83,8 +83,6 @@ class QueryableTest extends \PHPUnit_Framework_TestCase
 				[ 'name' => 'Alireza', 'id'	=> 10 ]
 
 			] );
-
-		//$this->assertEquals( $this->Repository() , $query->toList() );
 
 		$this->assertInternalType( 'object' , $query->Cast('object')->First() );
 
@@ -143,6 +141,25 @@ class QueryableTest extends \PHPUnit_Framework_TestCase
 		$this->assertCount( 4 , (new Queryable( [ 10 , 20 ] ))->Concat([ 40 , 50 ]) );
 
 		$this->assertCount( 50 , (new Queryable)->insertMany( range( 1 , 100 ) )->Except( range( 51 , 100 ) ) );
+
+	}
+
+	/**
+	 * @covers ::Sort()
+	 */
+	public function testSort()
+	{
+		$this->assertEquals( 1000 , (new Queryable( range(1,1000) ))->Sort('a,b => a < b')->First() );
+
+		$this->assertEquals( "Alireza" , 
+				(new Queryable)
+					->insert( [ 'id' => 30 , 'name' => 'Masoud' ] )
+					->insert( [ 'id' => 10 , 'name' => 'Alireza' ] )
+					->Cast('object')
+					->Sort('a,b => a->id > b->id')
+					->Select('u => u->name')
+					->First()
+			);
 
 	}
 

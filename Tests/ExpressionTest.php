@@ -50,5 +50,12 @@ class ExpressionTest extends \PHPUnit_Framework_TestCase
 
 	}
 
+	function testMultiInput()
+	{
+
+		$this->assertTrue( (new Expression('a,b => a > b'))->execute( 30 , 20 ) );
+
+	}
+
 }
 ?>
