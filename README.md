@@ -80,9 +80,87 @@ $users = array(
 
 // deleteElementAt
 (new Queryable)->insertBulk( [ 80 , 90 , 100 ] )->deleteElementAt(1); // Return Queryable( [ 80 , 100 ] )
+```
 
-// Sort
-(new Queryable)->insertBulk( range(1,100) )->Sort('a,b => a < b')->First(); // Return 100
+### ArrayAccess
+```php
+$books = new Queryable;
+
+$books->insert( [ 'name' => 'Alice in wonderland' ] );
+$books->insert( [ 'name' => 'LEGO Story' ] );
+
+// Will return "Alice in wonderland"
+print( $books[0]['name'] );
+```
+
+### Interator
+```php
+$users = new Queryable;
+
+$users->insertMany( array( [ 'name' => 'Alireza' ] , [ 'name' => 'Masoud' ] ) );
+
+foreach ( $users as $user )
+	printf("Name : %s\n" , $user['name']);
+
+// Output :
+// Name : Alireza
+// Name : Masoud
+```
+
+### Some Usages
+#### Find books of specified author
+```php
+$books = new Queryable;
+
+// Read books from stored json file
+$books->insertMany( json_decode( file_get_contents('books.json') ));
+
+// Print list of books authored by 'Leo Tolstoy'
+$author = 'Leo Tolstoy';
+print_r(
+	$books
+		->Where("book => book->author == $author")
+		->toArray()
+	);
+```
+#### Get specified property of books ( in this case 'Name' )
+```php
+/**
+ * Books json scheme :
+ * [
+ *    {
+ *       'name' : 'Alice in wonder land',
+ *       'price': '15$'
+ *    },
+ *    {
+ *       'name' : 'LEGO Story',
+ *       'price' : '35$'
+ *    }
+ * ]
+ **/
+$books = new Queryable( Json::readFromFile('books.json') );
+
+// returns only names of books
+print_r(
+	$books
+		->Select('book => book->name')
+		->toArray()
+);
+```
+#### Have any active modules ?
+```php
+$modules = new Queryable( App::getModules() );
+
+$any = $modules->Any('module => module->active');// Returns true of false
+```
+
+#### Get modules controllers
+```php
+$modules = new Queryable( App::getModules() );
+
+$controllers = $modules
+				->Where('module => module->active')
+				->Select('module => module->controllers');
 ```
 
 # Class Abstract
@@ -94,3 +172,14 @@ class Queryable implements Iterator, ArrayAccess
 	// Methods...
 }
 ```
+
+# Install
+### by Composer
+```
+composer require mdzzohrabi/Azera-Queryable:dev-master
+```
+### Manually
+- Download zip file github
+- Extract zip to your project
+- Include "autoload.php.dist" or create your autoloader manually
+- Enjoy it !
