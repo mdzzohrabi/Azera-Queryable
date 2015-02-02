@@ -107,6 +107,27 @@ foreach ( $users as $user )
 // Name : Masoud
 ```
 
+### SubNodes Quick Access
+Sample #1
+```php
+$users = new Queryable;
+
+$users->insert( array( 'name' => 'Masoud' , 'rule' => 'Admin' ) );
+
+$users->insert( array( 'name' => 'Mohsen' , 'rule' => 'User' ) );
+
+print $users->get('1.name'); // returns 'Mohsen'
+```
+Sample #2
+```php
+$configurations = new Queryable( App::readAllConfigurations() );
+
+print $configurations
+			->getAsQueryable('modules')
+			->Where('module => module->name == "search"')
+			->get('active'); // returns activation state of search module
+```
+
 ### Some Usages
 #### Find books of specified author
 ```php
