@@ -74,6 +74,28 @@ class QueryableTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals( 20 , (new Queryable( $data ))->Where('user => user->name == "Alireza"')->First()->age );
 	}
 
+	/**
+	 * @covers ::Cast()
+	 * @covers ::Select()
+	 * @covers ::Contains()
+	 * @covers ::Sum()
+	 * @covers ::First()
+	 * @covers ::Last()
+	 * @covers ::Distinct()
+	 * @covers ::Intersect()
+	 * @covers ::ElementAt()
+	 * @covers ::Min()
+	 * @covers ::Max()
+	 * @covers ::Average()
+	 * @covers ::insert()
+	 * @covers ::insertMany()
+	 * @covers ::Any()
+	 * @covers ::Concat()
+	 * @covers ::deleteElementAt()
+	 * @covers ::Skip()
+	 * @covers ::Count()
+	 * @covers ::Except()
+	 */
 	function testQueryable()
 	{
 
@@ -162,6 +184,47 @@ class QueryableTest extends \PHPUnit_Framework_TestCase
 			);
 
 	}
+    
+    public function testQuickAccess() {
+        
+        $users = array(
+            
+            array (
+                'name' => 'Alireza',
+                'id'   => 10
+            ),
+            array(
+                'name' => 'Masoud',
+                'id'   => 20
+            )
+            
+        );
+        
+        $users = new Queryable( $users );
+        
+        $this->assertEquals( 20 , $users->get('1.id') );
+        
+        $this->assertInternalType( 'array' , $users->get('0') );
+        
+        $users = $users->Cast('object');
+        
+        $this->assertEquals( 'Masoud' , $users->get('1.name') );
+        
+        $this->assertInternalType( 'object' , $users->get('1') );
+        
+    }
+    
+    /**
+     * @dataProvider Repository
+     * @expectedException Azera\Component\Queryable\NodeNotFoundException
+     */
+    public function testQuickAccessNodeNotFoundException( array $users ) {
+        
+        $users = new Queryable( $users );
+        
+        $users->getWithException( '3.age' );
+        
+    }
 
 }
 ?>

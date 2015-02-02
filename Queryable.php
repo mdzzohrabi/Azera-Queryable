@@ -13,6 +13,8 @@ use Iterator,
 class Queryable implements Iterator, ArrayAccess
 {
 	
+    use QuickAccessTrait;
+    
 	/**
 	 * Repository
 	 * @var array
