@@ -27,6 +27,30 @@ trait QuickAccessTrait {
         
     }
     
+    function getAsQueryable( $route , $default = false ) {
+        
+        $route = explode('.', $route);
+        
+        $value = $this->repository;
+        
+        foreach ( $route as $part )
+            if ( is_object( $value ) )
+                if ( property_exists( $value , $part ) )
+                    $value = $value->{$part};
+                else
+                    return $default;
+            elseif ( is_array( $value ) )
+                if ( isset( $value[ $part ] ) )
+                    $value = $value[ $part ];
+                else
+                    return $default;
+            else
+                return $default;
+        
+        return new Queryable( (array)$value );
+        
+    }
+    
     function getWithException( $route ) {
         
         $route = explode('.', $route);
