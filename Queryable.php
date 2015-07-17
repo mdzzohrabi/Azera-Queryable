@@ -1,6 +1,7 @@
 <?php
 namespace Azera\Component\Queryable;
 
+use Closure;
 use Iterator,
 	Traversable,
 	ArrayAccess;
@@ -93,6 +94,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Determines whether a sequence contains any elements.
+     *
 	 * @param string|Closure $Func
 	 * @return bool
 	 */
@@ -111,6 +113,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Count repository with or without condition
+     *
 	 * @param string|Closure $Func
 	 * @return int
 	 */
@@ -123,6 +126,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Get Average of sequence
+     *
 	 * @param string|Closure $Func
 	 * @return double
 	 */
@@ -143,6 +147,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Get sum of sequence
+     *
 	 * @param string|Closure $Func
 	 * @return double
 	 */
@@ -158,6 +163,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Determines whether a sequence contains a specified element by using the default equality comparer.
+     *
 	 * @param mixed $value Value
 	 * @return boolean
 	 */
@@ -168,6 +174,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Concatenates two sequences.
+     *
 	 * @param array|Queryable|Traversable $source 
 	 * @return Queryable
 	 */
@@ -184,6 +191,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Returns distinct elements from a sequence by using the default equality comparer to compare values
+     *
 	 * @return Queryable
 	 */
 	public function Distinct()
@@ -197,6 +205,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Produces the set difference of two sequences by using the default equality comparer to compare values.
+     *
 	 * @param array|Queryable $items Items
 	 * @return Queryable
 	 */
@@ -209,12 +218,14 @@ class Queryable implements Iterator, ArrayAccess
 
 	}
 
-	/**
-	 * Get first element of sequence with or without condition
-	 * @param  string|Closure $Func 	Condition
-	 * @param  mixed 		  $defaul 	Default
-	 * @return mixed
-	 */
+    /**
+     * Get first element of sequence with or without condition
+     *
+     * @param  string|Closure $Func Condition
+     * @param null $default
+     * @return mixed
+     * @internal param mixed $defaul Default
+     */
 	public function First( $Func = null , $default = null )
 	{
 		$bag = $Func ? $this->Select($Func) : $this->repository;
@@ -223,6 +234,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Get first element of sequence or return default
+     *
 	 * @param  mixed $default Default
 	 * @return mixed
 	 */
@@ -233,6 +245,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Get last element of sequence with or without condition
+     *
 	 * @param string|Closure $Func Condition
 	 * @return mixed
 	 */
@@ -241,16 +254,34 @@ class Queryable implements Iterator, ArrayAccess
 		return end($this->Select($Func)) ?: $default;
 	}
 
+    /**
+     * Get maximum value
+     *
+     * @param null|Closure $Func Selector
+     * @return mixed
+     */
 	public function Max( $Func = null )
 	{
 		return max( $this->Select( $Func )->toArray() );
 	}
 
+    /**
+     * Get minimum value
+     *
+     * @param null|Closure $Func Selector
+     * @return mixed
+     */
 	public function Min( $Func = null )
 	{
 		return min( $this->Select( $Func )->toArray() );
 	}
 
+    /**
+     * Select
+     *
+     * @param null|Closure $Func Selector
+     * @return $this|Queryable
+     */
 	public function Select( $Func = null )
 	{
 
@@ -260,12 +291,43 @@ class Queryable implements Iterator, ArrayAccess
 
 		$obj = $this->getClone();
 
-		if ( $Func ) foreach ( $obj->repository as &$item ) $item = $Func->execute( $item );
+        foreach ( $obj->repository as &$item )
+            $item = $Func->execute( $item );
 
 		return $obj;
 
 	}
 
+    /**
+     * Select key value
+     *
+     * @param Closure $Key
+     * @param Closure $Value
+     * @return Queryable
+     */
+    public function SelectKeyValue( $Key , $Value ) {
+
+        $Key = new Expression( $Key );
+        $Value = new Expression( $Value );
+
+        $items = array();
+
+        foreach ( $this->repository as $item ) {
+            $_k = $Key->execute( $item );
+            $_v = $Value->execute( $item );
+            $items[$_k] = $_v;
+        }
+
+        return new Queryable( $items );
+
+    }
+
+    /**
+     * Skip n items
+     *
+     * @param int $skip
+     * @return Queryable
+     */
 	public function Skip( $skip )
 	{
 
@@ -278,6 +340,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Get Intersect of two sequence
+     *
 	 * @param array|Queryable $items 
 	 * @return Queryable
 	 */
@@ -292,6 +355,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Casts the elements to the specified type.
+     *
 	 * @param string $type Type
 	 * @return Queryable
 	 */
@@ -308,8 +372,19 @@ class Queryable implements Iterator, ArrayAccess
 
 	}
 
+    /**
+     * Index of element in repository
+     *
+     * @param $element
+     * @return mixed
+     */
+    public function indexOf( $element ) {
+        return array_search( $element , $this->repository );
+    }
+
 	/**
 	 * Returns the element at a specified index in a sequence.
+     *
 	 * @param int|string $key 
 	 * @return mixed
 	 */
@@ -320,6 +395,7 @@ class Queryable implements Iterator, ArrayAccess
 
 	/**
 	 * Returns the element at a specified index in a sequence or a default value if the index is out of range
+     *
 	 * @param int|string $key 
 	 * @param mixed $default 
 	 * @return mixed
@@ -330,7 +406,8 @@ class Queryable implements Iterator, ArrayAccess
 	}
 
 	/**
-	 * Retreive items as array
+	 * Retrieve items as array
+     *
 	 * @return array
 	 */
 	public function toArray()
@@ -339,7 +416,8 @@ class Queryable implements Iterator, ArrayAccess
 	}
 
 	/**
-	 * Retreive items as array
+	 * Retrieve items as array
+     *
 	 * @return array
 	 */
 	public function toList()
@@ -399,38 +477,56 @@ class Queryable implements Iterator, ArrayAccess
 		unset( $this->repository[$offset] );
 	}
 
-	/**
-	 * Insert item to sequence
-	 * @param mixed $value Value
-	 */
+    /**
+     * Insert item to sequence
+     *
+     * @param mixed $value Value
+     * @return $this
+     */
 	public function insert( $value )
 	{
 		$this->repository[] = $value;
 		return $this;
 	}
 
-	/**
-	 * Insert many items to sequence
-	 * @param array $values Values
-	 */
+    /**
+     * Insert many items to sequence
+     *
+     * @param array $values Values
+     * @return $this
+     */
 	public function insertMany( $values )
 	{
 		$this->repository = array_merge( $this->repository , $values );
 		return $this;
 	}
 
-	/**
-	 * Delete key from sequence
-	 * @param mixed $offset Key name
-	 */
+    /**
+     * Delete key from sequence
+     *
+     * @param mixed $offset Key name
+     * @return $this
+     */
 	public function deleteElementAt( $offset )
 	{
 		unset( $this->repository[ $offset ] );
 		return $this;
 	}
 
+    /**
+     * Delete element
+     *
+     * @param $element
+     * @return $this
+     */
+    public function deleteElement( $element ) {
+        $this->deleteElementAt( array_search( $element , $this->repository ) );
+        return $this;
+    }
+
 	/**
 	 * Sort sequence by given comparator
+     *
 	 * @param Expression $Func Comparator
 	 * @return Queryable
 	 */

@@ -1,10 +1,12 @@
 <?php
 namespace Azera\Component\Queryable;
 
+use PHPUnit_Framework_TestCase;
+
 /**
  * @coversDefaultClass Azera\Component\Queryable
  */
-class QueryableTest extends \PHPUnit_Framework_TestCase
+class QueryableTest extends PHPUnit_Framework_TestCase
 {
 
 	function Repository()
@@ -212,6 +214,72 @@ class QueryableTest extends \PHPUnit_Framework_TestCase
         
         $this->assertInternalType( 'object' , $users->get('1') );
         
+    }
+
+    /**
+     * @covers ::indexOf()
+     */
+    public function testIndexOf() {
+
+        $object_1 = (object)[ 'name' => 'Masoud' ];
+        $object_2 = (object)[ 'name' => 'Alireza' ];
+
+        $q = new Queryable( [ $object_2 , $object_1 ] );
+
+        $this->assertEquals( 1 , $q->indexOf( $object_1 ) );
+        $this->assertEquals( 0 , $q->indexOf( $object_2 ) );
+
+    }
+
+    /**
+     * @covert ::deleteElement()
+     */
+    public function testDeleteElement() {
+
+        $object_1 = (object)[ 'name' => 'Masoud' ];
+        $object_2 = (object)[ 'name' => 'Alireza' ];
+
+        $q = new Queryable( [ $object_2 , $object_1 ] );
+
+        $this->assertCount( 2 ,  $q );
+        $this->assertTrue( $q->Contains( $object_2 ) );
+
+        $q->deleteElement( $object_2 );
+
+        $this->assertFalse( $q->Contains( $object_2 ) );
+        $this->assertCount( 1 , $q );
+
+
+    }
+
+    /**
+     * @covers ::SelectKeyValue
+     */
+    public function testSelectKeyValue() {
+
+        $users = array(
+
+            array (
+                'name' => 'Alireza',
+                'id'   => 10
+            ),
+            array(
+                'name' => 'Masoud',
+                'id'   => 20
+            )
+
+        );
+
+        $users = new Queryable( $users );
+
+        $this->assertEquals(
+            [
+                10  => 'Alireza',
+                20  => 'Masoud'
+            ],
+            $users->Cast('object')->SelectKeyValue('u => u->id','u => u->name')->toArray()
+        );
+
     }
     
     /**
