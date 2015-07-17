@@ -4,5 +4,6 @@ php:
 
 install:
     - composer self-update
+    - composer update
 
 script: phpunit --configuration phpunit.xml.dist
