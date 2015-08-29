@@ -20,7 +20,7 @@ class Queryable implements Iterator, ArrayAccess
 	 * Repository
 	 * @var array
 	 */
-	private $repository;
+	protected $repository;
 
 	public function __construct( array $data = array() )
 	{
