@@ -20,24 +20,44 @@ class Queryable implements Iterator, ArrayAccess
 	 * Repository
 	 * @var array
 	 */
-	private $repository;
+	protected $repository;
 
 	public function __construct( array $data = array() )
 	{
 		$this->repository = $data;
 	}
 
+    /**
+     * Set repository reference
+     *
+     * @param mixed &$reference Reference property
+     */
+    protected function setReference( &$reference ) {
+        $this->repository = $reference;
+    }
+
 	//public function __clone()
 	//{
 	//	$this->repository = array();
 	//}
 
+	/**
+	 * Set repository items
+	 *
+	 * @param  array $data Items
+	 * @return $this Queryable
+	 */
 	public function setRepository( array $data )
 	{
 		$this->repository = $data;
 		return $this;
 	}
 
+    /**
+     * Get repository items
+     *
+     * @return array
+     */
 	public function &getRepository()
 	{
 		return $this->repository;
