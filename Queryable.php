@@ -64,7 +64,7 @@ class Queryable implements Iterator, ArrayAccess
 	}
 
 	/**
-	 * Retreive all items with or without condition
+	 * Retrieve all items with or without condition
 	 * 
 	 * @param string|Closure $Func 
 	 * @return bool
